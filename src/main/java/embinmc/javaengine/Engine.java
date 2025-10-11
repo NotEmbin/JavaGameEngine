@@ -1,0 +1,52 @@
+package embinmc.javaengine;
+
+import embinmc.javaengine.game.Game;
+import embinmc.javaengine.game.GameArguments;
+import embinmc.javaengine.registry.EngineRegistries;
+import embinmc.javaengine.resource.Identifier;
+
+public class Engine {
+    private static Engine INSTANCE;
+    private final GameArguments gameArguments;
+    private final Game game;
+
+    private Engine(Game game) {
+        this.gameArguments = new GameArguments("Java Engine", "engine", "1.0.251011", 1, 60);
+        this.game = game;
+    }
+
+    public static Engine createInstance(Game game) {
+        if (Engine.INSTANCE != null) throw new RuntimeException("Cannot create multiple engine instances!");
+        Engine.INSTANCE = new Engine(game);
+        return Engine.INSTANCE;
+    }
+
+    public static Engine getInstance() {
+        if (Engine.INSTANCE == null) throw new RuntimeException("Can't get engine instance before it's creation!");
+        return Engine.INSTANCE;
+    }
+
+    public String getVersion() {
+        return this.gameArguments.versionString();
+    }
+
+    public int getDataVersion() {
+        return this.gameArguments.dataVersion();
+    }
+
+    public String getNamespace() {
+        return this.gameArguments.defaultNamespace();
+    }
+
+    public GameArguments getGameArguments() {
+        return this.gameArguments;
+    }
+
+    public Game getGame() {
+        return this.game;
+    }
+
+    public void engineInit() {
+        EngineRegistries.init();
+    }
+}

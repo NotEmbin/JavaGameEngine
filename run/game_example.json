@@ -1,0 +1,7 @@
+{
+  "default_namespace": "examplegame",
+  "game_name": "Example Game",
+  "version": "1.0.0-alpha.1",
+  "data_version": 1,
+  "target_fps": 60
+}

@@ -1,0 +1,6 @@
+/run/logs/
+/run/hs_err_*
+.idea/
+.gradle/
+build/
+hs_err_*.log

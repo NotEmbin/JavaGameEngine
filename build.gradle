@@ -1,0 +1,72 @@
+//import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+group 'embinmc.javaengine'
+version project.engine_version
+mainClassName = 'embinmc.javaengine.example.ExampleGame'
+
+repositories {
+    maven {
+        url "https://libraries.minecraft.net"
+    }
+    mavenCentral()
+//    maven {
+//        url "https://s01.oss.sonatype.org/content/repositories/staging/"
+//        metadataSources { artifact() }
+//    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'uk.co.electronstudio.jaylib:jaylib:5.5.+'
+    implementation 'com.mojang:datafixerupper:8.0.16'
+    implementation platform('org.apache.logging.log4j:log4j-bom:2.25.2')
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+    implementation files(
+            "lib/slf4j-api-1.7.36.jar",
+    )
+}
+
+//application {
+//    if(DefaultNativePlatform.currentOperatingSystem.isMacOsX()) {
+//        applicationDefaultJvmArgs = ['-XstartOnFirstThread']
+//    }
+//}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    sourceSets {
+        //main {
+        //    java {
+        //        exclude 'embinmc/javaengine/example/**'
+        //    }
+        //}
+    }
+}
+
+distributions {
+    main {
+        contents {
+            into('resources'){
+                from 'resources'
+            }
+            into(''){
+                from 'run'
+                exclude('logs')
+            }
+        }
+    }
+}
+
