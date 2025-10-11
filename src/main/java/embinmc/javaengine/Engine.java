@@ -11,7 +11,7 @@ public class Engine {
     private final Game game;
 
     private Engine(Game game) {
-        this.gameArguments = new GameArguments("Java Engine", "engine", "1.0.251011", 1, 60);
+        this.gameArguments = new GameArguments("Java Engine (main)", "engine", "1.0.251011", 1, 60);
         this.game = game;
     }
 

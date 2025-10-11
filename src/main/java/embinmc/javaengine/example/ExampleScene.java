@@ -2,15 +2,26 @@ package embinmc.javaengine.example;
 
 import com.raylib.Colors;
 import com.raylib.Raylib;
+import embinmc.javaengine.game.scene.PauseableScene;
 import embinmc.javaengine.game.scene.Scene;
 
-public class ExampleScene extends Scene {
+public class ExampleScene extends Scene implements PauseableScene {
+
     @Override
     public void init() {
     }
 
     @Override
+    public void update() {
+        super.update();
+    }
+
+    @Override
     public void render() {
-        Raylib.DrawText("test", 24, 24, 32, Colors.MAGENTA);
+        Raylib.DrawText(String.format("Tick: %s", this.ticks), 24, 128, 24, Colors.MAGENTA);
+    }
+
+    @Override
+    public void onReplacedOrRemoved() {
     }
 }

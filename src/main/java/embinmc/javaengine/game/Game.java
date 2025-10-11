@@ -3,8 +3,8 @@ package embinmc.javaengine.game;
 import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.control.EngineKeyBinds;
-import embinmc.javaengine.example.ExampleKeyBinds;
 import embinmc.javaengine.game.scene.DefaultPauseScene;
+import embinmc.javaengine.game.scene.PauseableScene;
 import embinmc.javaengine.game.scene.Scene;
 import embinmc.javaengine.registry.Registry;
 import embinmc.javaengine.resource.Identifier;
@@ -25,14 +25,18 @@ public abstract class Game {
     public final Scene defaultScene;
     public Scene currentScene = null;
     public TextureManager textureManager;
-    public Scene pauseScene;
-    private Language language;
+    protected Scene pauseScene;
+    protected Language language;
+    private boolean isPaused;
+    protected int ticks;
 
     protected Game(GameArguments gameArguments, Function<Game, Boolean> initializer, Scene defaultScene) {
         this.gameArguments = gameArguments;
         this.initializer = initializer;
         this.defaultScene = defaultScene;
         this.pauseScene = new DefaultPauseScene();
+        this.ticks = 0;
+        this.isPaused = false;
     }
 
     public void initAndRunGame() {
@@ -43,6 +47,7 @@ public abstract class Game {
         String windowTitle = String.format("%s", this.gameArguments.gameName(), this.gameArguments.versionString());
         Raylib.InitWindow(960, 540, windowTitle);
         Raylib.InitAudioDevice();
+
         // TODO: define "min target fps" var in GameArguments class
         if (this.gameArguments.targetFps() < 10) throw new RuntimeException("Attempting to set FPS target too low!");
         Raylib.SetTargetFPS(this.gameArguments.targetFps());
@@ -60,30 +65,56 @@ public abstract class Game {
         }
 
         this.currentScene = this.defaultScene;
+        this.currentScene.init();
+        Raylib.SetExitKey(EngineKeyBinds.CLOSE_GAME.getCurrentKey());
+
         while (!Raylib.WindowShouldClose()) {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(BLANK);
             this.update();
             this.render();
-            if (this.currentScene != null) {
-                this.currentScene.update();
-                this.currentScene.render();
+            if (!this.isPaused) this.currentScene.update();
+            this.currentScene.render();
+            if (this.currentScene instanceof PauseableScene pauseableScene && EngineKeyBinds.PAUSE.isKeyPressed()) {
+                if (!this.isPaused) {
+                    pauseableScene.onPause();
+                    this.pauseScene.init();
+                } else {
+                    pauseableScene.onUnpause();
+                    this.pauseScene.onReplacedOrRemoved();
+                }
+                this.isPaused = !this.isPaused;
             }
-            if (EngineKeyBinds.PAUSE.isKeyPressed()) {
-                this.logger.info("id: {}", Identifier.from("blah"));
+            if (this.isPaused) {
+                this.pauseScene.update();
+                this.pauseScene.render();
             }
             Raylib.DrawFPS(4, 4);
             Raylib.EndDrawing();
         }
+        this.currentScene.onReplacedOrRemoved();
+        if (this.isPaused) this.pauseScene.onReplacedOrRemoved();
         Raylib.CloseAudioDevice();
         Raylib.CloseWindow();
     }
 
     public abstract void render();
-    public abstract void update();
+    public void update() {
+        this.ticks++;
+    }
+
+    public void changeScene(Scene scene) {
+        this.currentScene.onReplacedOrRemoved();
+        this.currentScene = scene;
+        this.currentScene.init();
+    }
 
     public void overridePauseScene(Scene scene) {
         this.pauseScene = scene;
+    }
+
+    public Scene getPauseScene() {
+        return this.pauseScene;
     }
 
     public void setLanguageData(String file) {
