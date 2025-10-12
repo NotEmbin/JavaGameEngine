@@ -26,16 +26,29 @@ public class Text {
         return new Text(text);
     }
 
-    public void render(int x, int y) {
-        switch (this.alignment) {
-            case LEFT -> Raylib.DrawTextEx(this.font.getFont(), this.text, Vec2.of(x, y).toRayVec(), this.font.baseSize() * this.size, this.spacing * this.size, this.color);
-            case CENTER -> {
-                float height = this.font.baseSize() * this.size;
-                float width = Raylib.MeasureTextEx(this.font.getFont(), this.text, height, this.spacing * this.size).x();
-                Raylib.Vector2 pos = new Raylib.Vector2().x(x - (width / 2)).y(y - (height / 2));
-                Raylib.DrawTextEx(this.font.getFont(), this.text, pos, height, this.spacing * this.size, this.color);
-            }
+    protected void render(int x, int y, boolean withShadow, Raylib.Color color) {
+        if (withShadow) {
+            Raylib.Vector3 vec3 = Raylib.ColorToHSV(color);
+            Raylib.Color shadowColor = Raylib.ColorFromHSV(vec3.x(), vec3.y(), (float)(vec3.z() * 0.2));
+            this.render(x + this.size, y + this.size, false, shadowColor);
         }
+        float height = this.font.baseSize() * this.size;
+        float width = Raylib.MeasureTextEx(this.font.getFont(), this.text, height, this.spacing * this.size).x();
+        Raylib.Vector2 pos = new Raylib.Vector2();
+        switch (this.alignment) {
+            case LEFT -> pos.x(x).y(y - (height / 2));
+            case CENTER -> pos.x(x - (width / 2)).y(y - (height / 2));
+            case RIGHT -> pos.x(x - width).y(y - (height / 2));
+        }
+        Raylib.DrawTextEx(this.font.getFont(), this.text, pos, height, this.spacing * this.size, color);
+    }
+
+    public void render(int x, int y) {
+        this.render(x, y, true, this.color);
+    }
+
+    public void renderNoShadow(int x, int y) {
+        this.render(x, y, false, this.color);
     }
 
     public String getText() {
@@ -49,6 +62,10 @@ public class Text {
 
     public int getSize() {
         return this.size;
+    }
+
+    public JeFont getFont() {
+        return this.font;
     }
 
     public Text setSize(int size) {
@@ -81,6 +98,7 @@ public class Text {
 
     public enum Alignment {
         LEFT,
-        CENTER
+        CENTER,
+        RIGHT
     }
 }

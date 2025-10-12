@@ -31,6 +31,7 @@ public abstract class Game {
     protected Language language;
     private boolean isPaused;
     protected int ticks;
+    public DebugOverlayScene debugOverlay;
 
     protected Game(GameArguments gameArguments, Function<Game, Boolean> initializer, Scene defaultScene) {
         this.gameArguments = gameArguments;
@@ -45,7 +46,7 @@ public abstract class Game {
         this.logger.info("Loading game: {} ({})", this.gameArguments.gameName(), this.gameArguments.defaultNamespace());
 
         // raylib stuffs
-        String windowTitle = String.format("%s", this.gameArguments.gameName(), this.gameArguments.versionString());
+        String windowTitle = String.format("%s %s", this.gameArguments.gameName(), this.gameArguments.versionString());
         Raylib.InitWindow(960, 540, windowTitle);
         Raylib.InitAudioDevice();
 
@@ -59,6 +60,8 @@ public abstract class Game {
         Engine.getInstance().engineInit();
         this.textureManager = TextureManager.getManager();
 
+        this.debugOverlay = new DebugOverlayScene(Engine.getInstance());
+        this.debugOverlay.init();
         this.pauseScene = new DefaultPauseScene();
         if (!this.initializer.apply(this)) throw new RuntimeException("Failed to initialize game!");
 
@@ -71,7 +74,7 @@ public abstract class Game {
         this.currentScene.init();
         Raylib.SetExitKey(EngineKeyBinds.CLOSE_GAME.getCurrentKey());
 
-        Text text = Text.literal("bloob foo");
+        Text text = Text.literal("bloob foo").setColor(Colors.SKYBLUE);
 
         while (!Raylib.WindowShouldClose()) {
             Raylib.BeginDrawing();
@@ -96,7 +99,14 @@ public abstract class Game {
                 this.pauseScene.update();
                 this.pauseScene.render();
             }
-            if (EngineKeyBinds.SHOW_FRAMERATE.isKeyDown()) Raylib.DrawFPS(2, 2);
+            if (EngineKeyBinds.SHOW_FRAMERATE.isKeyDown() && !this.debugOverlay.isActive()) Raylib.DrawFPS(2, 2);
+            if (EngineKeyBinds.TOGGLE_DEBUG.isKeyPressed()) {
+                this.debugOverlay.active = !this.debugOverlay.active;
+            }
+            if (this.debugOverlay.active) {
+                this.debugOverlay.update();
+                this.debugOverlay.render();
+            }
             text.render(150, 150);
             Raylib.GetFPS();
             Raylib.EndDrawing();

@@ -11,6 +11,7 @@ public interface EngineKeyBinds {
     KeyBind CLOSE_GAME = register("close_game", Raylib.KEY_BACKSPACE);
     KeyBind PAUSE = register("pause", Raylib.KEY_ESCAPE);
     KeyBind SHOW_FRAMERATE = register("show_framerate", Raylib.KEY_F2);
+    KeyBind TOGGLE_DEBUG = register("toggle_debug_screen", Raylib.KEY_F3);
     KeyBind TEST = register("test_key", Raylib.KEY_B);
 
     private static KeyBind register(String id, int defaultKey) {
