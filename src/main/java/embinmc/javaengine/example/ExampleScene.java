@@ -4,6 +4,7 @@ import com.raylib.Colors;
 import com.raylib.Raylib;
 import embinmc.javaengine.game.scene.PauseableScene;
 import embinmc.javaengine.game.scene.Scene;
+import embinmc.javaengine.math.Vec2;
 
 public class ExampleScene extends Scene implements PauseableScene {
 

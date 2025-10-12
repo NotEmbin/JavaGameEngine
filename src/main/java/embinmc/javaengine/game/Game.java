@@ -1,13 +1,16 @@
 package embinmc.javaengine.game;
 
+import com.raylib.Colors;
 import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.control.EngineKeyBinds;
 import embinmc.javaengine.game.scene.*;
+import embinmc.javaengine.math.Vec2;
 import embinmc.javaengine.registry.Registry;
 import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.render.TextureManager;
 import embinmc.javaengine.resource.Language;
+import embinmc.javaengine.text.Text;
 import embinmc.javaengine.util.Util;
 import org.slf4j.Logger;
 
@@ -68,6 +71,8 @@ public abstract class Game {
         this.currentScene.init();
         Raylib.SetExitKey(EngineKeyBinds.CLOSE_GAME.getCurrentKey());
 
+        Text text = Text.literal("bloob foo");
+
         while (!Raylib.WindowShouldClose()) {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(BLANK);
@@ -91,7 +96,9 @@ public abstract class Game {
                 this.pauseScene.update();
                 this.pauseScene.render();
             }
-            if (EngineKeyBinds.SHOW_FRAMERATE.isKeyDown()) Raylib.DrawFPS(4, 4);
+            if (EngineKeyBinds.SHOW_FRAMERATE.isKeyDown()) Raylib.DrawFPS(2, 2);
+            text.render(150, 150);
+            Raylib.GetFPS();
             Raylib.EndDrawing();
         }
         this.currentScene.onReplacedOrRemoved();

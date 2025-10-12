@@ -3,6 +3,7 @@ package embinmc.javaengine;
 import embinmc.javaengine.game.Game;
 import embinmc.javaengine.game.GameArguments;
 import embinmc.javaengine.registry.EngineRegistries;
+import embinmc.javaengine.render.TextureManager;
 import embinmc.javaengine.resource.Identifier;
 
 public class Engine {
@@ -44,6 +45,10 @@ public class Engine {
 
     public Game getGame() {
         return this.game;
+    }
+
+    public TextureManager getTextureManager() {
+        return this.game.textureManager;
     }
 
     public void engineInit() {

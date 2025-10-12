@@ -1,13 +1,14 @@
 package embinmc.javaengine.game.scene.object;
 
+import embinmc.javaengine.render.Sprite;
 import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.util.VoidMethod;
 
 public abstract class ClickableObject extends GameObject {
     public VoidMethod clickAction = null;
 
-    public ClickableObject(Identifier textureId, int x, int y, int width, int height) {
-        super(textureId, x, y, width, height);
+    public ClickableObject(Sprite sprite, int x, int y, int width, int height) {
+        super(sprite, x, y, width, height);
     }
 
     public ClickableObject setClickAction(VoidMethod method) {

@@ -4,30 +4,40 @@ import com.raylib.Colors;
 import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.game.Game;
+import embinmc.javaengine.math.Vec2;
 import embinmc.javaengine.render.JeTexture;
+import embinmc.javaengine.render.Sprite;
 import embinmc.javaengine.resource.Identifier;
 
 public abstract class GameObject {
-    public Identifier textureId;
-    public JeTexture texture;
-    public int width, height, x, y;
-    public Raylib.Rectangle rect;
+    public int x, y, width, height;
+    public Sprite sprite;
 
-    public GameObject(Identifier textureId, int x, int y, int width, int height) {
-        this.textureId = textureId;
+    public GameObject(Sprite sprite, int x, int y, int width, int height) {
+        this.sprite = sprite;
         this.width = width;
         this.height = height;
-        this.x = x + (x / 2);
-        this.y = y + (y / 2);
-        this.rect = new Raylib.Rectangle().width(width).height(height).x(x - (width / 2)).y(y - (height / 2));
-        this.texture = Engine.getInstance().getGame().textureManager.missingnoTexture;
-        //Raylib.SetShapesTexture(this.texture.texture, this.rect);
+        this.x = x;
+        this.y = y;
     }
 
-    public abstract void render();
+    public GameObject(Sprite sprite, Vec2 pos, Vec2 scale) {
+        this.sprite = sprite;
+        this.width = scale.x();
+        this.height = scale.y();
+        this.x = pos.x();
+        this.y = pos.y();
+    }
+
+    public void render() {
+        this.sprite.render(this.x, this.y, this.width, this.height);
+    }
+
     public abstract void update();
 
     public boolean isMouseHovering() {
-        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), this.rect);
+        if (this.sprite.getRect() == null) return false;
+        if (this.sprite.getRect().isNull()) return false;
+        return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), this.sprite.getRect());
     }
 }

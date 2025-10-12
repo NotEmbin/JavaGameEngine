@@ -28,7 +28,7 @@ public class Sprite {
         return new Sprite(texture, Alignment.TOP_LEFT);
     }
 
-    public void render(int x, int y, int width, int height) {
+    public void render(int x, int y, int width, int height, Raylib.Color tint) {
         int alignedX = switch (this.alignment) {
             case CENTER -> x - (width / 2);
             case TOP_LEFT -> x;
@@ -40,7 +40,11 @@ public class Sprite {
         if (this.rectDest == null || !rectMatches(this.rectDest, alignedX, alignedY, width, height)) {
             this.rectDest = new Raylib.Rectangle().x(alignedX).y(alignedY).width(width).height(height);
         }
-        Raylib.DrawTexturePro(this.texture.texture, this.rectSource, this.rectDest, this.origin, 0.0f, Colors.WHITE);
+        Raylib.DrawTexturePro(this.texture.texture, this.rectSource, this.rectDest, this.origin, 0.0f, tint);
+    }
+
+    public void render(int x, int y, int width, int height) {
+        this.render(x, y, width, height, Colors.WHITE);
     }
 
     public static boolean rectMatches(Raylib.Rectangle rect, int x, int y, int width, int height) {
@@ -54,6 +58,10 @@ public class Sprite {
 
     public JeTexture getTexture() {
         return this.texture;
+    }
+
+    public Raylib.Rectangle getRect() {
+        return this.rectDest;
     }
 
     protected enum Alignment {
