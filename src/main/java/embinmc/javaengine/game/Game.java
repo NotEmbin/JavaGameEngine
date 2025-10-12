@@ -3,9 +3,7 @@ package embinmc.javaengine.game;
 import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.control.EngineKeyBinds;
-import embinmc.javaengine.game.scene.DefaultPauseScene;
-import embinmc.javaengine.game.scene.PauseableScene;
-import embinmc.javaengine.game.scene.Scene;
+import embinmc.javaengine.game.scene.*;
 import embinmc.javaengine.registry.Registry;
 import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.render.TextureManager;
@@ -14,6 +12,7 @@ import embinmc.javaengine.util.Util;
 import org.slf4j.Logger;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static com.raylib.Colors.BLANK;
 
@@ -34,7 +33,6 @@ public abstract class Game {
         this.gameArguments = gameArguments;
         this.initializer = initializer;
         this.defaultScene = defaultScene;
-        this.pauseScene = new DefaultPauseScene();
         this.ticks = 0;
         this.isPaused = false;
     }
@@ -57,6 +55,8 @@ public abstract class Game {
         Identifier.setDefaultNamespace(this.gameArguments.defaultNamespace());
         Engine.getInstance().engineInit();
         this.textureManager = TextureManager.getManager();
+
+        this.pauseScene = new DefaultPauseScene();
         if (!this.initializer.apply(this)) throw new RuntimeException("Failed to initialize game!");
 
         for (Identifier id : Registry.ROOT.getEntries().keySet()) {
@@ -76,24 +76,29 @@ public abstract class Game {
             if (!this.isPaused) this.currentScene.update();
             this.currentScene.render();
             if (this.currentScene instanceof PauseableScene pauseableScene && EngineKeyBinds.PAUSE.isKeyPressed()) {
-                if (!this.isPaused) {
-                    pauseableScene.onPause();
-                    this.pauseScene.init();
-                } else {
-                    pauseableScene.onUnpause();
-                    this.pauseScene.onReplacedOrRemoved();
+                if (pauseableScene.canPause()) {
+                    if (!this.isPaused) {
+                        pauseableScene.onPause();
+                        this.pauseScene.init();
+                    } else {
+                        pauseableScene.onUnpause();
+                        this.pauseScene.onReplacedOrRemoved();
+                    }
+                    this.isPaused = !this.isPaused;
                 }
-                this.isPaused = !this.isPaused;
             }
             if (this.isPaused) {
                 this.pauseScene.update();
                 this.pauseScene.render();
             }
-            Raylib.DrawFPS(4, 4);
+            if (EngineKeyBinds.SHOW_FRAMERATE.isKeyDown()) Raylib.DrawFPS(4, 4);
             Raylib.EndDrawing();
         }
         this.currentScene.onReplacedOrRemoved();
         if (this.isPaused) this.pauseScene.onReplacedOrRemoved();
+        if (this.currentScene instanceof DoOnGameClose current) current.onGameClose();
+        if (this.pauseScene instanceof DoOnGameClose pause) pause.onGameClose();
+        this.logger.info("Exiting...");
         Raylib.CloseAudioDevice();
         Raylib.CloseWindow();
     }

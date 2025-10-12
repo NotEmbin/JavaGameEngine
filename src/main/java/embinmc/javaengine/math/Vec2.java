@@ -1,6 +1,7 @@
 package embinmc.javaengine.math;
 
 import com.mojang.serialization.Codec;
+import com.raylib.Raylib;
 
 import java.util.List;
 
@@ -16,5 +17,9 @@ public record Vec2(int x, int y) {
 
     public static Codec<Vec2> getCodec() {
         return Vec2.CODEC;
+    }
+
+    public Raylib.Vector2 toRayVec() {
+        return new Raylib.Vector2().x(this.x).y(this.y);
     }
 }

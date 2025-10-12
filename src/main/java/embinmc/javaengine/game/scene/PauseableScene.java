@@ -10,4 +10,8 @@ package embinmc.javaengine.game.scene;
 public interface PauseableScene {
     default void onPause() {}
     default void onUnpause() {}
+
+    default boolean canPause() {
+        return true;
+    }
 }
