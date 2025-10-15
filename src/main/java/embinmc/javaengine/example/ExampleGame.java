@@ -33,11 +33,6 @@ public class ExampleGame extends Game {
     }
 
     @Override
-    public void render() {
-        Raylib.DrawTexture(TextureManager.getManager().missingnoTexture.texture, 64, 64, WHITE);
-    }
-
-    @Override
     public void update() {
         super.update();
         if (ExampleKeyBinds.MOVE_CAM_LEFT.isKeyDown()) {
@@ -52,9 +47,5 @@ public class ExampleGame extends Game {
         if (ExampleKeyBinds.MOVE_CAM_DOWN.isKeyDown()) {
             this.camera.offset(Vec2f.of(this.camera.offset().x() + 1, this.camera.offset().y() + 1).toRayVec());
         }
-    }
-
-    @Override
-    public void onCloseGame() {
     }
 }

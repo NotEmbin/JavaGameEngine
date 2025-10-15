@@ -1,9 +1,7 @@
 package embinmc.javaengine.game.scene;
 
-import com.google.gson.internal.JavaVersion;
 import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
-import embinmc.javaengine.control.EngineKeyBinds;
 import embinmc.javaengine.game.Game;
 import embinmc.javaengine.text.Text;
 import embinmc.javaengine.util.CoordHelper;

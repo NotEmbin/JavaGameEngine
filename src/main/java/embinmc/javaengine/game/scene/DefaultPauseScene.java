@@ -1,13 +1,10 @@
 package embinmc.javaengine.game.scene;
 
 import com.raylib.Colors;
-import com.raylib.Helpers;
 import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.example.ExampleObject;
 import embinmc.javaengine.game.scene.object.ButtonObject;
-import embinmc.javaengine.render.JeTexture;
-import embinmc.javaengine.render.Sprite;
 import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.text.Text;
 import embinmc.javaengine.util.CoordHelper;

@@ -121,7 +121,7 @@ public abstract class Game {
         Raylib.CloseWindow();
     }
 
-    public abstract void render();
+    public void render() {}
 
     /**
      * Global game update function that is always called regardless of the current scene.
@@ -132,7 +132,7 @@ public abstract class Game {
         this.ticks++;
     }
 
-    public abstract void onCloseGame();
+    public void onCloseGame() {}
 
     public void changeScene(Scene scene) {
         this.currentScene.onReplacedOrRemoved();

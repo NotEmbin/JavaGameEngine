@@ -4,10 +4,9 @@ import com.raylib.Colors;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.game.scene.PauseableScene;
 import embinmc.javaengine.game.scene.Scene;
-import embinmc.javaengine.render.JeTexture;
 import embinmc.javaengine.render.Sprite;
-import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.text.Text;
+import embinmc.javaengine.util.CoordHelper;
 
 public class ExampleScene extends Scene implements PauseableScene {
     private Text currentTickText;
@@ -27,7 +26,7 @@ public class ExampleScene extends Scene implements PauseableScene {
     @Override
     public void render() {
         super.render();
-        this.currentTickText.render(256, 256);
+        this.currentTickText.render(CoordHelper.fromCenterX(-256), CoordHelper.fromCenterY(128));
     }
 
     @Override

@@ -3,7 +3,6 @@ package embinmc.javaengine.game;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.raylib.Helpers;
 import embinmc.javaengine.data.MoreCodecs;
 import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.resource.util.FileManaging;
