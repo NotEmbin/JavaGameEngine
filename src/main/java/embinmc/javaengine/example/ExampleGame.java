@@ -5,12 +5,9 @@ import embinmc.javaengine.Engine;
 import embinmc.javaengine.game.Game;
 import embinmc.javaengine.game.GameArguments;
 import embinmc.javaengine.math.Vec2f;
-import embinmc.javaengine.render.TextureManager;
 import embinmc.javaengine.util.Util;
 
 import java.util.Arrays;
-
-import static com.raylib.Colors.WHITE;
 
 public class ExampleGame extends Game {
     protected ExampleGame(GameInitializer initializer) {
