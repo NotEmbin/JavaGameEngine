@@ -2,9 +2,9 @@ package embinmc.javaengine;
 
 import embinmc.javaengine.game.Game;
 import embinmc.javaengine.game.GameArguments;
+import embinmc.javaengine.game.VersionType;
 import embinmc.javaengine.registry.EngineRegistries;
 import embinmc.javaengine.render.TextureManager;
-import embinmc.javaengine.resource.Identifier;
 
 public class Engine {
     private static Engine INSTANCE;
@@ -12,18 +12,20 @@ public class Engine {
     private final Game game;
 
     private Engine(Game game) {
-        this.gameArguments = new GameArguments("Java Engine (main)", "engine", "1.0.251011", 1, 60);
+        this.gameArguments = new GameArguments("Java Engine (main)", "engine", "1.0.251014", 1, 60, VersionType.RELEASE);
         this.game = game;
     }
 
     public static Engine createInstance(Game game) {
-        if (Engine.INSTANCE != null) throw new RuntimeException("Cannot create multiple engine instances!");
+        assert Engine.INSTANCE == null : "Cannot create multiple engine instances!";
+        //if (Engine.INSTANCE != null) throw new RuntimeException("Cannot create multiple engine instances!");
         Engine.INSTANCE = new Engine(game);
         return Engine.INSTANCE;
     }
 
     public static Engine getInstance() {
-        if (Engine.INSTANCE == null) throw new RuntimeException("Can't get engine instance before it's creation!");
+        assert Engine.INSTANCE != null : "Can't get engine instance before it's creation!";
+        //if (Engine.INSTANCE == null) throw new RuntimeException("Can't get engine instance before it's creation!");
         return Engine.INSTANCE;
     }
 

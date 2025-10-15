@@ -1,8 +1,14 @@
 package embinmc.javaengine.game.scene;
 
 import com.raylib.Colors;
+import com.raylib.Helpers;
 import com.raylib.Raylib;
+import embinmc.javaengine.Engine;
 import embinmc.javaengine.example.ExampleObject;
+import embinmc.javaengine.game.scene.object.ButtonObject;
+import embinmc.javaengine.render.JeTexture;
+import embinmc.javaengine.render.Sprite;
+import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.text.Text;
 import embinmc.javaengine.util.CoordHelper;
 
@@ -11,15 +17,30 @@ public class DefaultPauseScene extends Scene implements DoOnGameClose {
     private float volume, volume2, volume3, volume4, volume5;
     private Raylib.Rectangle bg;
     private Text pauseText;
+    private Text verText;
 
     public DefaultPauseScene() {
         this.addObject(new ExampleObject());
+
+        this.addObject(new ButtonObject( // unpause game
+                Identifier.ofEngine("ui/button"),
+                Identifier.ofEngine("ui/button_hover"),
+                Text.literal("Back to Game").setSize(3).setAlignment(Text.Alignment.CENTER)
+        ).setClickAction((_, engine, _) -> engine.getGame().unpause()));
+
+        this.addObject(new ButtonObject( // quit game
+                Identifier.ofEngine("ui/button"),
+                Identifier.ofEngine("ui/button_hover"),
+                Text.literal("Quit Game").setSize(3).setAlignment(Text.Alignment.CENTER)
+        ).setClickAction((_, engine, _) -> engine.getGame().closeGame()));
     }
 
     @Override
     public void init() {
         this.ticks = 0;
         this.pauseText = Text.literal("Paused").setSize(5).setAlignment(Text.Alignment.CENTER);
+        String vtext = String.format("%s %s", Engine.getInstance().getGame().getGameArguments().gameName(), Engine.getInstance().getGame().getVersion());
+        this.verText = Text.literal(vtext).setSize(2).setAlignment(Text.Alignment.RIGHT).setColor(Colors.GRAY);
         if (this.music == null) this.music = Raylib.LoadMusicStream("assets/engine/music/pause1.wav");
         if (this.music2 == null) this.music2 = Raylib.LoadMusicStream("assets/engine/music/pause2.wav");
         if (this.music3 == null) this.music3 = Raylib.LoadMusicStream("assets/engine/music/pause3.wav");
@@ -27,9 +48,9 @@ public class DefaultPauseScene extends Scene implements DoOnGameClose {
         if (this.music5 == null) this.music5 = Raylib.LoadMusicStream("assets/engine/music/pause5.wav");
         Raylib.SetMusicVolume(this.music, 0.0f);
         Raylib.SetMusicVolume(this.music2, 0.0f);
-        Raylib.SetMusicVolume(this.music3, 0.001f);
+        Raylib.SetMusicVolume(this.music3, 0.001f); // keep min above 0 so the sound actually keeps playing at all times
         Raylib.SetMusicVolume(this.music4, 0.001f);
-        Raylib.SetMusicVolume(this.music5, 0.001f);
+        Raylib.SetMusicVolume(this.music5, 0.001f); // if volume is 0 for too long, the sound stops playing and sounds get desynced
         Raylib.PlayMusicStream(this.music);
         Raylib.PlayMusicStream(this.music2);
         Raylib.PlayMusicStream(this.music3);
@@ -41,6 +62,7 @@ public class DefaultPauseScene extends Scene implements DoOnGameClose {
     @Override
     public void update() {
         super.update();
+        this.bg.width(Raylib.GetScreenWidth()).height(Raylib.GetScreenHeight());
         this.volume = Math.clamp(((float) this.ticks - 300) / 2000, 0.0f, 0.25f);
         this.volume2 = Math.clamp(((float) this.ticks - 3000) / 2000, 0.0f, 0.2f);
         this.volume3 = Math.clamp(((float) this.ticks - 6000) / 2000, 0.001f, 0.2f);
@@ -60,22 +82,21 @@ public class DefaultPauseScene extends Scene implements DoOnGameClose {
         Raylib.UpdateMusicStream(this.music3);
         Raylib.UpdateMusicStream(this.music4);
         Raylib.UpdateMusicStream(this.music5);
+        this.gameObjects.get(1).setX(CoordHelper.getCenterX()).setY(CoordHelper.fromCenterY(16));
+        this.gameObjects.get(2).setX(CoordHelper.getCenterX()).setY(CoordHelper.fromBottom(64));
     }
 
     @Override
     public void render() {
         Raylib.DrawRectangleRec(this.bg, Raylib.GetColor(0x66222288));
-        //Raylib.DrawRectangle(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
         Raylib.DrawText(String.format("Volume1: %s", this.volume), 24, 32, 24, Colors.MAGENTA);
         Raylib.DrawText(String.format("Volume2: %s", this.volume2), 24, 56, 24, Colors.MAGENTA);
         Raylib.DrawText(String.format("Volume3: %s", this.volume3), 24, 80, 24, Colors.MAGENTA);
         Raylib.DrawText(String.format("Volume4: %s", this.volume4), 24, 104, 24, Colors.MAGENTA);
         Raylib.DrawText(String.format("Volume5: %s", this.volume5), 24, 128, 24, Colors.MAGENTA);
         Raylib.DrawText(String.format("Pause Tick: %s", this.ticks), 24, 256, 24, Colors.MAGENTA);
-        //int posX = (Raylib.GetScreenWidth() / 2) - (Raylib.MeasureText("Paused", 48) / 2);
-        //int posY = (Raylib.GetScreenHeight() / 2) - 24;
-        //Raylib.DrawText("Paused", posX, posY, 48, Colors.WHITE);
-        this.pauseText.render(CoordHelper.getCenterX(), CoordHelper.getCenterY());
+        this.pauseText.render(CoordHelper.getCenterX(), CoordHelper.fromCenterY(-128));
+        this.verText.render(CoordHelper.fromRight(8), CoordHelper.fromBottom((int) (this.verText.getHeight() - 4)));
         super.render();
     }
 

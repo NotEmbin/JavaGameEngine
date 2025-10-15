@@ -31,4 +31,9 @@ public enum VersionType {
     public static Codec<VersionType> getCodec() {
         return VersionType.CODEC;
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

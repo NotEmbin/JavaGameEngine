@@ -27,4 +27,15 @@ public class Util {
         if (string.endsWith(end)) return string.substring(0, string.length() - end.length());
         return string;
     }
+
+    /**
+     * <p>Repeats a void method a specified amount of times.</p>
+     * <p>The supplied integer is the index.</p>
+     * <p>Index starts at 1.</p>
+     */
+    public static void repeat(int amount, SuppliedVoid<Integer> action) {
+        for (int index = 1; index <= amount; index++) {
+            action.execute(index);
+        }
+    }
 }

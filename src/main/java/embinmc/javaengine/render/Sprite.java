@@ -28,12 +28,12 @@ public class Sprite {
         return new Sprite(texture, Alignment.TOP_LEFT);
     }
 
-    public void render(int x, int y, int width, int height, Raylib.Color tint) {
-        int alignedX = switch (this.alignment) {
+    public void render(int x, int y, float width, float height, Raylib.Color tint) {
+        float alignedX = switch (this.alignment) {
             case CENTER -> x - (width / 2);
             case TOP_LEFT -> x;
         };
-        int alignedY = switch (this.alignment) {
+        float alignedY = switch (this.alignment) {
             case CENTER -> y - (height / 2);
             case TOP_LEFT -> y;
         };
@@ -47,11 +47,15 @@ public class Sprite {
         this.render(x, y, width, height, Colors.WHITE);
     }
 
-    public static boolean rectMatches(Raylib.Rectangle rect, int x, int y, int width, int height) {
-        int rectX = (int) rect.x();
-        int rectY = (int) rect.y();
-        int rectW = (int) rect.width();
-        int rectH = (int) rect.height();
+    public void renderAutoDim(int x, int y, float scale) {
+        this.render(x, y, this.texture.texture.width() * scale, this.texture.texture.height() * scale, Colors.WHITE);
+    }
+
+    public static boolean rectMatches(Raylib.Rectangle rect, float x, float y, float width, float height) {
+        float rectX = rect.x();
+        float rectY = rect.y();
+        float rectW = rect.width();
+        float rectH = rect.height();
 
         return !((rectX != x) || (rectY != y) || (rectW != width) || (rectH != height));
     }

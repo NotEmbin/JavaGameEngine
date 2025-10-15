@@ -1,17 +1,13 @@
 package embinmc.javaengine.game.scene.object;
 
-import com.raylib.Colors;
 import com.raylib.Raylib;
-import embinmc.javaengine.Engine;
-import embinmc.javaengine.game.Game;
 import embinmc.javaengine.math.Vec2;
-import embinmc.javaengine.render.JeTexture;
 import embinmc.javaengine.render.Sprite;
-import embinmc.javaengine.resource.Identifier;
 
 public abstract class GameObject {
     public int x, y, width, height;
     public Sprite sprite;
+    private boolean lastTickHoverStatus;
 
     public GameObject(Sprite sprite, int x, int y, int width, int height) {
         this.sprite = sprite;
@@ -19,6 +15,7 @@ public abstract class GameObject {
         this.height = height;
         this.x = x;
         this.y = y;
+        this.lastTickHoverStatus = false;
     }
 
     public GameObject(Sprite sprite, Vec2 pos, Vec2 scale) {
@@ -39,5 +36,21 @@ public abstract class GameObject {
         if (this.sprite.getRect() == null) return false;
         if (this.sprite.getRect().isNull()) return false;
         return Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), this.sprite.getRect());
+    }
+
+    public boolean onceMouseHovering() {
+        boolean lastStatus = this.lastTickHoverStatus;
+        this.lastTickHoverStatus = this.isMouseHovering();
+        return this.isMouseHovering() != lastStatus;
+    }
+
+    public GameObject setX(int x) {
+        this.x = x;
+        return this;
+    }
+
+    public GameObject setY(int y) {
+        this.y = y;
+        return this;
     }
 }

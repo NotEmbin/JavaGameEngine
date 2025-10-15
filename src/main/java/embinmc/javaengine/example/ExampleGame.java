@@ -4,26 +4,32 @@ import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.game.Game;
 import embinmc.javaengine.game.GameArguments;
+import embinmc.javaengine.math.Vec2f;
 import embinmc.javaengine.render.TextureManager;
+import embinmc.javaengine.util.Util;
 
-import java.util.function.Function;
+import java.util.Arrays;
+
 import static com.raylib.Colors.WHITE;
 
 public class ExampleGame extends Game {
-    protected ExampleGame(Function<Game, Boolean> initializer) {
+    protected ExampleGame(GameInitializer initializer) {
         super(GameArguments.createInstance("game_example.json"), initializer, new ExampleScene());
     }
 
     public static void main(String[] args) {
+        Util.getLogger().info("Passed args: {}", Arrays.stream(args).toList());
+        Raylib.SetConfigFlags(Raylib.FLAG_WINDOW_TRANSPARENT); // this is crazy, man
         Engine.createInstance(new ExampleGame(ExampleGame::initGame));
+        if (Raylib.GetWorkingDirectory().getString().endsWith("\\bin")) {
+            Raylib.ChangeDirectory(Util.removeEndFromString(Raylib.GetWorkingDirectory().getString(), "\\bin"));
+        }
         Engine.getInstance().getGame().setLanguageData("assets/examplegame/lang/en_us.json");
         Engine.getInstance().getGame().initAndRunGame();
     }
 
-    public static boolean initGame(Game game) {
+    public static void initGame(Game game) {
         ExampleKeyBinds.init();
-        // do stuff here like create registries
-        return true;
     }
 
     @Override
@@ -33,6 +39,22 @@ public class ExampleGame extends Game {
 
     @Override
     public void update() {
+        super.update();
+        if (ExampleKeyBinds.MOVE_CAM_LEFT.isKeyDown()) {
+            this.camera.offset(Vec2f.of(this.camera.offset().x() - 1, this.camera.offset().y()).toRayVec());
+        }
+        if (ExampleKeyBinds.MOVE_CAM_RIGHT.isKeyDown()) {
+            this.camera.offset(Vec2f.of(this.camera.offset().x() + 1, this.camera.offset().y()).toRayVec());
+        }
+        if (ExampleKeyBinds.MOVE_CAM_UP.isKeyDown()) {
+            this.camera.offset(Vec2f.of(this.camera.offset().x(), this.camera.offset().y() - 1).toRayVec());
+        }
+        if (ExampleKeyBinds.MOVE_CAM_DOWN.isKeyDown()) {
+            this.camera.offset(Vec2f.of(this.camera.offset().x() + 1, this.camera.offset().y() + 1).toRayVec());
+        }
+    }
 
+    @Override
+    public void onCloseGame() {
     }
 }

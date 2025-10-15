@@ -8,7 +8,7 @@ import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.util.Util;
 
 public interface Fonts {
-    JeFont DEFAULT = register("engine:minecraft", 12);
+    JeFont DEFAULT = register("engine:default", 12);
     JeFont RAYLIB = Registry.register(EngineRegistries.FONT, new JeFont(Raylib.GetFontDefault(), 10), Identifier.of("raylib", "default"));
 
     private static JeFont register(String id, int baseSize) {
@@ -18,6 +18,6 @@ public interface Fonts {
     }
 
     static void init() {
-        Util.getLogger().info("Loading engine font(s)...");
+        Util.getLogger().info("Loading engine fonts...");
     }
 }

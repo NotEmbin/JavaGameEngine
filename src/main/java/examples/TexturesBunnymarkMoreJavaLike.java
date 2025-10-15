@@ -39,8 +39,8 @@ public class TexturesBunnymarkMoreJavaLike {
         System.out.println(System.getProperty("java.vm.version"));
     // Initialization
     //--------------------------------------------------------------------------------------
-     int screenWidth = 1920;
-     int screenHeight = 1080;
+     int screenWidth = 1600;
+     int screenHeight = 900;
 
     InitWindow(screenWidth, screenHeight, "raylib [textures] example - bunnymark");
 

@@ -1,5 +1,6 @@
 package embinmc.javaengine.game.scene;
 
+import com.raylib.Raylib;
 import embinmc.javaengine.game.scene.object.GameObject;
 import embinmc.javaengine.render.Sprite;
 import embinmc.javaengine.resource.Identifier;
@@ -13,7 +14,6 @@ public abstract class Scene {
     public List<GameObject> gameObjects = new ArrayList<>();
     protected Scene currentSubScene = null;
     protected Scene parentScene = null;
-    public Identifier backgroundTextureId;
     public Sprite backgroundTexture;
     protected boolean pauseable = true;
     protected int ticks = 0;
@@ -36,6 +36,9 @@ public abstract class Scene {
     }
 
     public void render() {
+        if (this.backgroundTexture != null) {
+            this.backgroundTexture.render(0, 0, Raylib.GetScreenWidth(), Raylib.GetScreenHeight());
+        }
         if (this.isInSubScene()) {
             this.currentSubScene.render();
         } else {
@@ -70,6 +73,7 @@ public abstract class Scene {
 
     public Scene setSubScene(Scene scene) {
         this.currentSubScene = scene.setParentScene(this);
+        this.currentSubScene.init();
         return this.currentSubScene;
     }
 
