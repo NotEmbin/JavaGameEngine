@@ -12,7 +12,7 @@ public class Engine {
     private final Game game;
 
     private Engine(Game game) {
-        this.gameArguments = new GameArguments("Java Engine (main)", "engine", "1.0.251014", 1, 60, VersionType.RELEASE);
+        this.gameArguments = new GameArguments("Java Engine (main)", "engine", "1.0.251015.3", 1, 60, VersionType.RELEASE);
         this.game = game;
     }
 
@@ -55,5 +55,6 @@ public class Engine {
 
     public void engineInit() {
         EngineRegistries.init();
+        EngineRegistries.COLOR.getInit().execute();
     }
 }

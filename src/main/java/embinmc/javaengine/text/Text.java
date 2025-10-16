@@ -5,7 +5,7 @@ import com.raylib.Raylib;
 
 public class Text {
     private static final Text EMPTY = Text.literal("");
-    private JeFont font = Fonts.RAYLIB;
+    private JeFont font;
     private String text;
     private int size = 3;
     private float spacing = 1f;
@@ -19,6 +19,7 @@ public class Text {
 
     private Text(String text) {
         this.text = text;
+        this.font = Fonts.RAYLIB;
     }
 
     public static Text literal(String text) {
@@ -36,15 +37,15 @@ public class Text {
                 Raylib.Color shadowColor = Raylib.ColorFromHSV(vec3.x(), vec3.y(), (float)(vec3.z() * 0.2));
                 this.render(x + this.size, y + this.size, false, shadowColor);
             }
-            float height = this.getHeight();
-            float width = Raylib.MeasureTextEx(this.font.getFont(), this.text, height, this.spacing * this.size).x();
+            float height = Math.round(this.getHeight());
+            float width = Raylib.MeasureTextEx(this.font.getFont(), this.text, height, Math.round(this.spacing * this.size)).x();
             Raylib.Vector2 pos = new Raylib.Vector2();
             switch (this.alignment) {
                 case LEFT -> pos.x(x).y(y - (height / 2));
-                case CENTER -> pos.x(x - (width / 2)).y(y - (height / 2));
-                case RIGHT -> pos.x(x - width).y(y - (height / 2));
+                case CENTER -> pos.x(Math.round(x - (width / 2))).y(y - (height / 2));
+                case RIGHT -> pos.x(Math.round(x - width)).y(y - (height / 2));
             }
-            Raylib.DrawTextEx(this.font.getFont(), this.text, pos, height, this.spacing * this.size, color);
+            Raylib.DrawTextEx(this.font.getFont(), this.text, pos, height, Math.round(this.spacing * this.size), color);
         }
     }
 

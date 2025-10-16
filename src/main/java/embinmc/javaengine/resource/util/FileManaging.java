@@ -1,6 +1,7 @@
 package embinmc.javaengine.resource.util;
 
 import com.google.gson.JsonObject;
+import com.raylib.Raylib;
 import embinmc.javaengine.resource.Identifier;
 import embinmc.javaengine.util.Util;
 import org.slf4j.Logger;
@@ -12,7 +13,7 @@ public final class FileManaging {
     private static final Logger LOGGER = Util.getLogger();
 
     public static List<String> getPathsInFolder(String folder) {
-        File folder2 = new File(folder);
+        File folder2 = new File(formatPath(folder));
         List<String> paths = new ArrayList<>(32);
         if (folder2.isDirectory()) {
             for (File file : folder2.listFiles()) {
@@ -30,7 +31,7 @@ public final class FileManaging {
     }
 
     public static String removeBaseFromFile(String base, String file) {
-        String newFile = file.replaceAll("\\\\", "/");
+        String newFile = Util.removeStartFromString(file.replaceAll("\\\\", "/"), "../");
         return newFile.replaceFirst(base, "");
     }
 
@@ -44,7 +45,7 @@ public final class FileManaging {
 
     public static List<String> getNamespacesInGeneric(String folder) {
         List<String> namespaces = new ArrayList<>(8);
-        File genFolder = new File(folder + "/");
+        File genFolder = new File(formatPath(folder + "/"));
         if (!genFolder.exists()) {
             LOGGER.warn("'{}' folder doesn't exist and does not have namespaces", folder);
             return List.of();
@@ -67,18 +68,29 @@ public final class FileManaging {
         return getNamespacesInGeneric("data");
     }
 
+    public static String formatPath(String path) {
+        if (Util.probablyBuilt()) {
+            if (path.startsWith("/")) {
+                return ".." + path;
+            } else {
+                return "../" + path;
+            }
+        }
+        return path;
+    }
+
     public static JsonObject getJsonFile(String path) {
         try {
-            return GsonUtil.fromInputStream(new File(path).toURL().openStream());
+            return GsonUtil.fromInputStream(new File(formatPath(path)).toURL().openStream());
         } catch (Exception e) {
-            throw new RuntimeException("What the freak is " + path);
+            throw new RuntimeException("What the freak is " + new File(formatPath(path)).getName());
         }
     }
 
     public static List<String> getNamespacesWithFolder(String folder) {
         List<String> foundNamespaces = new ArrayList<>(FileManaging.getNamespacesInData().size());
         for (String namespace : FileManaging.getNamespacesInData()) {
-            File namespaceFolder = new File("data/" + namespace);
+            File namespaceFolder = new File(formatPath("data/" + namespace));
             for (File content : namespaceFolder.listFiles()) {
                 if (content.isDirectory() && Objects.equals(content.getName(), folder)) {
                     foundNamespaces.add(namespace);

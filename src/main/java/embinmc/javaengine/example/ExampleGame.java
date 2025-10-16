@@ -5,7 +5,9 @@ import embinmc.javaengine.Engine;
 import embinmc.javaengine.game.Game;
 import embinmc.javaengine.game.GameArguments;
 import embinmc.javaengine.math.Vec2f;
+import embinmc.javaengine.util.Color;
 import embinmc.javaengine.util.Util;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 
@@ -16,17 +18,19 @@ public class ExampleGame extends Game {
 
     public static void main(String[] args) {
         Util.getLogger().info("Passed args: {}", Arrays.stream(args).toList());
-        Raylib.SetConfigFlags(Raylib.FLAG_WINDOW_TRANSPARENT); // this is crazy, man
-        Engine.createInstance(new ExampleGame(ExampleGame::initGame));
-        if (Raylib.GetWorkingDirectory().getString().endsWith("\\bin")) {
+        Util.getLogger().info(Raylib.GetWorkingDirectory().getString());
+        if (Util.probablyBuilt()) {
             Raylib.ChangeDirectory(Util.removeEndFromString(Raylib.GetWorkingDirectory().getString(), "\\bin"));
         }
-        Engine.getInstance().getGame().setLanguageData("assets/examplegame/lang/en_us.json");
-        Engine.getInstance().getGame().initAndRunGame();
+        Raylib.SetConfigFlags(Raylib.FLAG_WINDOW_TRANSPARENT); // this is crazy, man
+        Engine engine = Engine.createInstance(new ExampleGame(ExampleGame::initGame));
+        engine.getGame().setLanguageData("assets/examplegame/lang/en_us.json");
+        engine.getGame().initAndRunGame();
     }
 
     public static void initGame(Game game) {
         ExampleKeyBinds.init();
+        //Logger logger = Util.getLogger();
     }
 
     @Override

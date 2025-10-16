@@ -53,9 +53,21 @@ public class Registry<T> {
         return create(Identifier.ofEngine(key), init);
     }
 
+    public static <T> DataLoadableRegistry<T> createDataLoadable(Identifier key, Codec<T> codec) {
+        LOGGER.info("Creating data loadable registry {}", key);
+        return Registry.register(Registry.ROOT, new DataLoadableRegistry<>(key, codec), key, false);
+    }
+
     public static <T> DataLoadableRegistry<T> createDataLoadable(String key, Codec<T> codec) {
-        LOGGER.info("Creating data loadable registry {}", Identifier.from(key));
-        return Registry.register(Registry.ROOT, new DataLoadableRegistry<>(Identifier.from(key), codec), Identifier.from(key), false);
+        return createDataLoadable(Identifier.from(key), codec);
+    }
+
+    /**
+     * Used by the engine to create its own data driven registries.
+     * Should NOT be used by a game.
+     */
+    public static <T> DataLoadableRegistry<T> createEngineDataLoadable(String key, Codec<T> codec) {
+        return createDataLoadable(Identifier.ofEngine(key), codec);
     }
 
     protected void addEntry(T entry, Identifier id, boolean log_entry_creation) {

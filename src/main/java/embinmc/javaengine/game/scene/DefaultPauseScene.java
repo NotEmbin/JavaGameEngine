@@ -5,7 +5,10 @@ import com.raylib.Raylib;
 import embinmc.javaengine.Engine;
 import embinmc.javaengine.example.ExampleObject;
 import embinmc.javaengine.game.scene.object.ButtonObject;
+import embinmc.javaengine.game.scene.object.ClickableObject;
+import embinmc.javaengine.game.scene.object.GameObject;
 import embinmc.javaengine.resource.Identifier;
+import embinmc.javaengine.text.Fonts;
 import embinmc.javaengine.text.Text;
 import embinmc.javaengine.util.CoordHelper;
 
@@ -29,7 +32,7 @@ public class DefaultPauseScene extends Scene implements DoOnGameClose {
                 Identifier.ofEngine("ui/button"),
                 Identifier.ofEngine("ui/button_hover"),
                 Text.literal("Quit Game").setSize(3).setAlignment(Text.Alignment.CENTER)
-        ).setClickAction((_, engine, _) -> engine.getGame().closeGame()));
+        ).setClickAction((_, _, _) -> this.setSubScene(new ConfirmExitScene())));
     }
 
     @Override
@@ -79,26 +82,33 @@ public class DefaultPauseScene extends Scene implements DoOnGameClose {
         Raylib.UpdateMusicStream(this.music3);
         Raylib.UpdateMusicStream(this.music4);
         Raylib.UpdateMusicStream(this.music5);
-        this.gameObjects.get(1).setX(CoordHelper.getCenterX()).setY(CoordHelper.fromCenterY(16));
-        this.gameObjects.get(2).setX(CoordHelper.getCenterX()).setY(CoordHelper.fromBottom(64));
+        if (!this.isInSubScene()) {
+            this.gameObjects.get(1).setX(CoordHelper.getCenterX()).setY(CoordHelper.fromCenterY(16));
+            this.gameObjects.get(2).setX(CoordHelper.getCenterX()).setY(CoordHelper.fromBottom(64));
+        }
     }
 
     @Override
     public void render() {
         Raylib.DrawRectangleRec(this.bg, Raylib.GetColor(0x66222288));
-        Raylib.DrawText(String.format("Volume1: %s", this.volume), 24, 32, 24, Colors.MAGENTA);
-        Raylib.DrawText(String.format("Volume2: %s", this.volume2), 24, 56, 24, Colors.MAGENTA);
-        Raylib.DrawText(String.format("Volume3: %s", this.volume3), 24, 80, 24, Colors.MAGENTA);
-        Raylib.DrawText(String.format("Volume4: %s", this.volume4), 24, 104, 24, Colors.MAGENTA);
-        Raylib.DrawText(String.format("Volume5: %s", this.volume5), 24, 128, 24, Colors.MAGENTA);
-        Raylib.DrawText(String.format("Pause Tick: %s", this.ticks), 24, 256, 24, Colors.MAGENTA);
-        this.pauseText.render(CoordHelper.getCenterX(), CoordHelper.fromCenterY(-128));
-        this.verText.render(CoordHelper.fromRight(8), CoordHelper.fromBottom((int) (this.verText.getHeight() - 4)));
+        if (!this.isInSubScene()) {
+            Raylib.DrawText(String.format("Volume1: %s", this.volume), 24, 32, 20, Colors.MAGENTA);
+            Raylib.DrawText(String.format("Volume2: %s", this.volume2), 24, 56, 20, Colors.MAGENTA);
+            Raylib.DrawText(String.format("Volume3: %s", this.volume3), 24, 80, 20, Colors.MAGENTA);
+            Raylib.DrawText(String.format("Volume4: %s", this.volume4), 24, 104, 20, Colors.MAGENTA);
+            Raylib.DrawText(String.format("Volume5: %s", this.volume5), 24, 128, 20, Colors.MAGENTA);
+            Raylib.DrawText(String.format("Pause Tick: %s", this.ticks), 24, 256, 30, Colors.MAGENTA);
+            this.pauseText.render(CoordHelper.getCenterX(), CoordHelper.fromCenterY(-100));
+            this.verText.render(CoordHelper.fromRight(8), CoordHelper.fromBottom((int) (this.verText.getHeight() - 4)));
+        }
         super.render();
     }
 
     @Override
     public void onReplacedOrRemoved() {
+        if (this.isInSubScene()) {
+            this.exitSubScene();
+        }
         Raylib.StopMusicStream(this.music);
         Raylib.StopMusicStream(this.music2);
         Raylib.StopMusicStream(this.music3);
@@ -113,5 +123,45 @@ public class DefaultPauseScene extends Scene implements DoOnGameClose {
         if (this.music3 != null) Raylib.UnloadMusicStream(this.music3);
         if (this.music4 != null) Raylib.UnloadMusicStream(this.music4);
         if (this.music5 != null) Raylib.UnloadMusicStream(this.music5);
+    }
+
+    protected static class ConfirmExitScene extends Scene {
+        protected ClickableObject confirmButton;
+        protected ClickableObject cancelButton;
+        protected Text header;
+
+        @Override
+        public void init() {
+            this.confirmButton = new ButtonObject(
+                    Identifier.ofEngine("ui/button"),
+                    Identifier.ofEngine("ui/button_hover"),
+                    Text.literal("Confirm").setSize(3).setAlignment(Text.Alignment.CENTER)
+            ).setClickAction(((_, engine, _) -> engine.getGame().closeGame()));
+            this.cancelButton = new ButtonObject(
+                    Identifier.ofEngine("ui/button"),
+                    Identifier.ofEngine("ui/button_hover"),
+                    Text.literal("Cancel").setSize(3).setAlignment(Text.Alignment.CENTER)
+            ).setClickAction(((_, _, _) -> this.parentScene.exitSubScene()));
+            this.header = Text.literal("Are you sure you want to quit?").setAlignment(Text.Alignment.CENTER).setSize(3);
+        }
+
+        @Override
+        public void update() {
+            super.update();
+            this.confirmButton.setX(CoordHelper.getCenterX()).setY(CoordHelper.fromCenterY(-16)).update();
+            this.cancelButton.setX(CoordHelper.getCenterX()).setY(CoordHelper.fromCenterY(48)).update();
+        }
+
+        @Override
+        public void render() {
+            super.render();
+            this.confirmButton.render();
+            this.cancelButton.render();
+            this.header.render(CoordHelper.getCenterX(), CoordHelper.fromCenterY(-96));
+        }
+
+        @Override
+        public void onReplacedOrRemoved() {
+        }
     }
 }

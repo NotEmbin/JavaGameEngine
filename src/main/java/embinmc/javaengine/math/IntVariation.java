@@ -2,6 +2,7 @@ package embinmc.javaengine.math;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.raylib.Raylib;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class IntVariation {
 
     public int getRandomValue() {
         if (this.canBeSingle()) return this.getNum1();
-        return JeRandom.getRandomIntBetween(this.number1, this.number2);
+        return Raylib.GetRandomValue(this.number1, this.number2);
     }
 
     public boolean canBeSingle() {

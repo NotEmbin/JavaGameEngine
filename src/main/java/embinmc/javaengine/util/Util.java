@@ -1,5 +1,6 @@
 package embinmc.javaengine.util;
 
+import com.raylib.Raylib;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,10 @@ public class Util {
         if (string.endsWith(end)) return string.substring(0, string.length() - end.length());
         return string;
     }
+    public static String removeStartFromString(String string, String start) {
+        if (string.endsWith(start)) return string.substring(start.length());
+        return string;
+    }
 
     /**
      * <p>Repeats a void method a specified amount of times.</p>
@@ -37,5 +42,9 @@ public class Util {
         for (int index = 1; index <= amount; index++) {
             action.execute(index);
         }
+    }
+
+    public static boolean probablyBuilt() {
+        return Raylib.GetWorkingDirectory().getString().endsWith("\\bin");
     }
 }
